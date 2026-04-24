@@ -1,0 +1,708 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg: #fafafa;
+    --bg-elevated: #ffffff;
+    --bg-inset: #f3f3f3;
+    --fg: #141414;
+    --fg-secondary: #5a5a5a;
+    --fg-tertiary: #8a8a8a;
+    --fg-muted: #b0b0b0;
+    --edge: #d9d9d9;
+    --edge-strong: #c0c0c0;
+    --edge-subtle: #ececec;
+    --sign-frame: #1e1e1e;
+    --sign-frame-inner: #2d2d2d;
+    --sign-face: #f0f0f0;
+    --sign-face-border: #c8c8c8;
+    --sign-depth: #d0d0d0;
+    --sign-depth-dark: #a8a8a8;
+    --sign-depth-side: #bfbfbf;
+    --sign-highlight: rgba(255,255,255,0.6);
+    --sign-shadow: rgba(0,0,0,0.08);
+    --sign-cap-edge: #2a2a2a;
+    --badge-blue: #3b82f6;
+    --dot: #d5d5d5;
+    --hatch-fg: rgba(0, 0, 0, 0.04);
+    --wire: #b0b0b0;
+    --grid-line: rgba(0, 0, 0, 0.04);
+    --gh-0: #ebedf0;
+    --gh-1: #9be9a8;
+    --gh-2: #40c463;
+    --gh-3: #30a14e;
+    --gh-4: #216e39;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  }
+
+  [data-theme="dark"] {
+    --bg: #0b0b0b;
+    --bg-elevated: #151515;
+    --bg-inset: #1a1a1a;
+    --fg: #e8e8e8;
+    --fg-secondary: #a0a0a0;
+    --fg-tertiary: #666666;
+    --fg-muted: #444444;
+    --edge: #2a2a2a;
+    --edge-strong: #3a3a3a;
+    --edge-subtle: #1e1e1e;
+    --sign-frame: #0e0e0e;
+    --sign-frame-inner: #1c1c1c;
+    --sign-face: #181818;
+    --sign-face-border: #333333;
+    --sign-depth: #252525;
+    --sign-depth-dark: #1a1a1a;
+    --sign-depth-side: #202020;
+    --sign-highlight: rgba(255,255,255,0.06);
+    --sign-shadow: rgba(0,0,0,0.3);
+    --sign-cap-edge: #111111;
+    --badge-blue: #60a5fa;
+    --dot: #222222;
+    --hatch-fg: rgba(255, 255, 255, 0.025);
+    --wire: #444444;
+    --grid-line: rgba(255, 255, 255, 0.03);
+    --gh-0: #161b22;
+    --gh-1: #0e4429;
+    --gh-2: #006d32;
+    --gh-3: #26a641;
+    --gh-4: #39d353;
+  }
+
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Dotted background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--dot) 0.6px, transparent 0.6px);
+    background-size: 20px 20px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+}
+
+/* Theme icon switching */
+[data-theme="light"] .icon-moon { display: none; }
+[data-theme="dark"] .icon-sun { display: none; }
+
+/* Grid guides */
+.grid-guides {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+}
+.grid-guide {
+  position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid-line);
+}
+.grid-guide--1 { left: calc(50% - 380px); }
+.grid-guide--2 { left: calc(50% - 200px); }
+.grid-guide--3 { left: calc(50% - 60px); }
+.grid-guide--4 { left: calc(50% + 60px); }
+.grid-guide--5 { left: calc(50% + 200px); }
+.grid-guide--6 { left: calc(50% + 380px); }
+
+/* H-lines */
+.h-line { position: relative; width: 100%; z-index: 1; }
+.h-line--full { height: 1px; background: var(--edge); }
+.h-line--full::before, .h-line--full::after {
+  content: ''; position: absolute; top: 0; height: 1px; background: var(--edge); width: 100vw;
+}
+.h-line--full::before { right: 100%; }
+.h-line--full::after { left: 100%; }
+.h-line--hatch {
+  height: 32px; border-top: 1px solid var(--edge); border-bottom: 1px solid var(--edge);
+}
+.h-line--hatch::before {
+  content: ''; position: absolute; left: -100vw; top: 0; width: 200vw; height: 100%;
+  z-index: -1;
+  background: repeating-linear-gradient(315deg, var(--hatch-fg) 0, var(--hatch-fg) 1px, transparent 0, transparent 50%);
+  background-size: 10px 10px;
+}
+
+/* Page frame */
+.page-frame {
+  position: relative; z-index: 1; max-width: 760px; margin: 0 auto;
+  padding: 0 24px; border-left: 1px solid var(--edge); border-right: 1px solid var(--edge);
+  min-height: 100vh;
+}
+
+/* 3D Sign */
+.sign-3d__body {
+  position: relative; transform-style: preserve-3d;
+  transform: rotateX(3deg) rotateY(-1.5deg);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  filter: drop-shadow(0 18px 24px var(--sign-shadow)) drop-shadow(0 6px 8px var(--sign-shadow));
+}
+.sign-3d__body:hover { transform: rotateX(1deg) rotateY(0.5deg); }
+
+.sign-3d__front {
+  position: relative; display: flex; align-items: stretch;
+  background: linear-gradient(180deg, var(--sign-face) 0%, color-mix(in srgb, var(--sign-face) 96%, black) 100%);
+  border: 1.5px solid var(--sign-face-border);
+  border-radius: 12px; min-height: 80px; z-index: 2;
+  box-shadow:
+    inset 0 1px 0 var(--sign-highlight),
+    inset 0 -1px 0 var(--sign-shadow),
+    0 1px 2px var(--sign-shadow);
+}
+
+/* Top depth face — visible via perspective tilt */
+.sign-3d__top {
+  position: absolute; top: 0; left: 6px; right: 6px; height: 14px;
+  background: linear-gradient(180deg, var(--sign-depth) 0%, color-mix(in srgb, var(--sign-depth) 88%, black) 100%);
+  border: 1px solid var(--sign-face-border); border-bottom: none;
+  border-radius: 8px 8px 0 0; transform-origin: bottom center; transform: rotateX(70deg); z-index: 1;
+  box-shadow: inset 0 1px 0 var(--sign-highlight);
+}
+/* Bottom depth face — peeks out under the sign */
+.sign-3d__bottom {
+  position: absolute; bottom: 0; left: 6px; right: 6px; height: 14px;
+  background: linear-gradient(0deg, var(--sign-depth-dark) 0%, var(--sign-depth-side) 100%);
+  border: 1px solid color-mix(in srgb, var(--sign-face-border) 70%, black); border-top: none;
+  border-radius: 0 0 8px 8px; transform-origin: top center; transform: rotateX(-70deg); z-index: 0;
+}
+/* Left side edge face */
+.sign-3d__left {
+  position: absolute; top: 6px; bottom: 6px; left: 0; width: 14px;
+  background: linear-gradient(90deg, var(--sign-depth-side) 0%, var(--sign-depth) 100%);
+  border: 1px solid var(--sign-face-border); border-right: none;
+  border-radius: 8px 0 0 8px; transform-origin: right center; transform: rotateY(-70deg); z-index: 1;
+}
+/* Right side edge face */
+.sign-3d__right {
+  position: absolute; top: 6px; bottom: 6px; right: 0; width: 14px;
+  background: linear-gradient(270deg, var(--sign-depth-side) 0%, var(--sign-depth) 100%);
+  border: 1px solid var(--sign-face-border); border-left: none;
+  border-radius: 0 8px 8px 0; transform-origin: left center; transform: rotateY(70deg); z-index: 1;
+}
+/* Back panel of the sign */
+.sign-3d__back {
+  position: absolute; inset: 3px; background: var(--sign-depth-dark);
+  border-radius: 8px; transform: translateZ(-16px); z-index: -1;
+  border: 1px solid color-mix(in srgb, var(--sign-face-border) 50%, black);
+}
+
+/* Sign end caps — true 3D extruded caps with hardware detail */
+.sign-cap {
+  width: 24px; min-width: 24px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sign-frame) 92%, white) 0%, var(--sign-frame) 50%, color-mix(in srgb, var(--sign-frame) 80%, black) 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  padding: 10px 0; position: relative;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
+}
+.sign-cap--left {
+  border-radius: 12px 0 0 12px;
+  border-right: 1px solid var(--sign-cap-edge);
+}
+.sign-cap--right {
+  border-radius: 0 12px 12px 0;
+  border-left: 1px solid var(--sign-cap-edge);
+}
+/* Cap side extrusion edge highlights */
+.sign-cap--left::before {
+  content: ''; position: absolute; top: 4px; bottom: 4px; left: 0; width: 3px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 50%, rgba(0,0,0,0.15) 100%);
+  border-radius: 12px 0 0 12px;
+}
+.sign-cap--right::after {
+  content: ''; position: absolute; top: 4px; bottom: 4px; right: 0; width: 3px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 50%, rgba(0,0,0,0.15) 100%);
+  border-radius: 0 12px 12px 0;
+}
+/* Screw / rivet hardware on caps */
+.sign-cap__screw {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--sign-frame-inner) 80%, white), var(--sign-frame-inner));
+  border: 0.5px solid rgba(255,255,255,0.1);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.5), 0 0.5px 0 rgba(255,255,255,0.05);
+  position: relative;
+}
+/* Phillips-head cross detail on screws */
+.sign-cap__screw::before {
+  content: '+'; position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 5px; font-weight: 700; line-height: 1;
+  color: rgba(255,255,255,0.1);
+}
+
+/* Sign badges */
+.sign-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 1px 6px; font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  border-radius: 3px; letter-spacing: 0.04em; cursor: pointer; border: none;
+  transition: opacity 0.15s, transform 0.1s; line-height: 1.6;
+}
+.sign-badge:active { transform: scale(0.95); }
+.sign-badge--filled { background: var(--sign-frame); color: var(--sign-face); }
+.sign-badge--outlined { background: transparent; color: var(--fg); border: 1px solid var(--edge); }
+.sign-badge--arrow { padding: 1px 5px; font-size: 11px; }
+
+/* Sign arrow button */
+.sign-ui-arrow {
+  display: flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 3px; border: 1px solid var(--edge);
+  background: var(--bg-elevated); color: var(--fg-secondary); cursor: pointer;
+  transition: background 0.15s, color 0.15s; flex-shrink: 0;
+}
+.sign-ui-arrow:hover { background: var(--fg); color: var(--bg); }
+
+/* Micro toggle */
+.sign-micro-toggle { display: flex; align-items: center; gap: 4px; cursor: pointer; margin-top: 2px; }
+.sign-micro-toggle__track {
+  width: 22px; height: 12px; border-radius: 6px; background: var(--edge);
+  position: relative; transition: background 0.2s;
+}
+.sign-micro-toggle[data-checked="true"] .sign-micro-toggle__track { background: var(--fg); }
+.sign-micro-toggle__thumb {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--bg-elevated);
+  position: absolute; top: 2px; left: 2px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0.5px 2px rgba(0,0,0,0.2);
+}
+.sign-micro-toggle[data-checked="true"] .sign-micro-toggle__thumb { transform: translateX(10px); }
+.sign-micro-toggle__label {
+  font-family: var(--font-mono); font-size: 8px; font-weight: 600;
+  color: var(--fg-tertiary); text-transform: uppercase; letter-spacing: 0.06em;
+}
+.sign-indicator-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--edge); transition: background 0.6s ease; }
+.sign-indicator-dot--red { animation: traffic-red 3s ease-in-out infinite; }
+.sign-indicator-dot--yellow { animation: traffic-yellow 3s ease-in-out infinite; }
+.sign-indicator-dot--green { animation: traffic-green 3s ease-in-out infinite; }
+
+@keyframes traffic-red {
+  0%, 100% { background: #ef4444; opacity: 0.85; }
+  33%, 90% { background: var(--edge); opacity: 0.4; }
+}
+@keyframes traffic-yellow {
+  0%, 25% { background: var(--edge); opacity: 0.4; }
+  33%, 60% { background: #eab308; opacity: 0.85; }
+  66%, 100% { background: var(--edge); opacity: 0.4; }
+}
+@keyframes traffic-green {
+  0%, 55% { background: var(--edge); opacity: 0.4; }
+  66%, 95% { background: #22c55e; opacity: 0.85; }
+  100% { background: var(--edge); opacity: 0.4; }
+}
+
+/* Wire / rod system */
+.sign-rod__wire {
+  position: relative;
+}
+.sign-rod__wire::after {
+  content: ''; position: absolute; top: 25%; left: -1.5px;
+  width: 4px; height: 8px; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%); border-radius: 1px;
+}
+/* Wire mount bracket at bottom of rod */
+.sign-rod__bracket {
+  width: 10px; height: 6px; background: var(--sign-frame);
+  border-radius: 0 0 2px 2px; position: relative;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.sign-rod__bracket::before {
+  content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 3px; background: var(--sign-frame-inner);
+  border-radius: 0 0 1px 1px;
+}
+/* Wire ceiling mount */
+.sign-rod__mount {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, var(--edge-strong), color-mix(in srgb, var(--wire) 70%, black));
+  border: 1.5px solid var(--edge-strong);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+  position: relative;
+}
+.sign-rod__mount::after {
+  content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 3px; height: 3px; border-radius: 50%;
+  background: var(--sign-frame); border: 0.5px solid rgba(255,255,255,0.08);
+}
+
+/* Profile ring */
+.profile-avatar__ring {
+  position: absolute; inset: -4px; border-radius: 50%; border: 1px solid var(--edge); z-index: 1;
+}
+
+/* Flag */
+.flag-stripe--white::after {
+  content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 3px; height: 3px; border-radius: 50%; border: 0.6px solid #000080;
+}
+
+/* Metadata rows */
+.meta-row {
+  position: relative; display: flex; align-items: center; min-height: 36px;
+  border-bottom: 1px solid var(--edge);
+}
+.meta-row:first-child {
+  border-top: 1px solid var(--edge);
+}
+
+.meta-row__divider { width: 1px; height: 14px; background: var(--edge); flex-shrink: 0; }
+
+.meta-row__link {
+  font-size: 12px; color: var(--fg-secondary); text-decoration: none;
+  border-bottom: 1px solid transparent; transition: color 0.15s, border-color 0.15s;
+}
+.meta-row__link:hover { color: var(--fg); border-bottom-color: var(--fg); }
+
+.meta-row__tag {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 500;
+  padding: 1px 6px; border-radius: 3px; background: var(--bg-inset);
+  border: 1px solid var(--edge); color: var(--fg-tertiary);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+/* Social cells */
+.social-cell {
+  transition: background 0.15s;
+}
+.social-cell:hover { background: var(--bg-inset); }
+.social-cell:hover .social-cell__arrow { transform: translate(1px, -1px); }
+
+/* Search modal */
+.search-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(4px); z-index: 200;
+  display: flex; justify-content: center; align-items: flex-start; padding-top: 15vh;
+  opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s;
+}
+.search-overlay.active { opacity: 1; visibility: visible; }
+.search-modal {
+  width: 100%; max-width: 480px; background: var(--bg-elevated);
+  border: 1px solid var(--edge); border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.12); overflow: hidden;
+  transform: translateY(-16px) scale(0.98);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.search-overlay.active .search-modal { transform: translateY(0) scale(1); }
+
+/* Responsive */
+@media (max-width: 680px) {
+  .grid-guide--1, .grid-guide--6 { display: none; }
+  .grid-guide--2 { left: calc(50% - 140px); }
+  .grid-guide--5 { left: calc(50% + 140px); }
+}
+
+/* ═══════════════════════════════════════════ */
+/* MULTIPLAYER — Live Cursors                  */
+/* ═══════════════════════════════════════════ */
+.live-cursors-layer {
+  position: fixed; inset: 0; pointer-events: none; z-index: 300;
+  overflow: hidden;
+}
+.live-cursor {
+  position: absolute; top: 0; left: 0; pointer-events: none;
+  transition: transform 0.08s linear;
+  will-change: transform;
+  z-index: 301;
+}
+.live-cursor__label {
+  position: absolute; top: 18px; left: 10px;
+  font-family: var(--font-mono); font-size: 8px; font-weight: 700;
+  color: #fff; padding: 1px 5px; border-radius: 3px;
+  white-space: nowrap; line-height: 1.5;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* ═══════════════════════════════════════════ */
+/* MULTIPLAYER — Chat Panel                    */
+/* ═══════════════════════════════════════════ */
+.chat-panel {
+  position: fixed; bottom: 16px; right: 16px;
+  width: 320px; max-height: 420px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  z-index: 350;
+  display: flex; flex-direction: column;
+  transform: translateY(16px) scale(0.95);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s, visibility 0.2s;
+  overflow: hidden;
+}
+.chat-panel--open {
+  transform: translateY(0) scale(1);
+  opacity: 1; visibility: visible; pointer-events: auto;
+}
+
+.chat-panel__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--edge);
+  background: var(--bg-inset);
+}
+
+.chat-panel__messages {
+  flex: 1; overflow-y: auto; padding: 10px 12px;
+  max-height: 280px; min-height: 120px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--edge) transparent;
+}
+
+.chat-msg {
+  padding: 6px 0; border-bottom: 1px solid var(--edge-subtle);
+}
+.chat-msg:last-of-type { border-bottom: none; }
+.chat-msg--own { }
+.chat-msg__user {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.chat-msg__time {
+  font-family: var(--font-mono); font-size: 8px; color: var(--fg-muted);
+}
+.chat-msg__text {
+  font-family: var(--font-sans); font-size: 12px; color: var(--fg);
+  line-height: 1.5; word-break: break-word;
+}
+
+.chat-panel__input {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--edge);
+  background: var(--bg-inset);
+}
+.chat-panel__text-input {
+  flex: 1; background: var(--bg-elevated);
+  border: 1px solid var(--edge); border-radius: 5px;
+  padding: 6px 10px; font-family: var(--font-mono);
+  font-size: 11px; color: var(--fg);
+  outline: none; transition: border-color 0.15s;
+}
+.chat-panel__text-input:focus {
+  border-color: var(--fg-muted);
+}
+.chat-panel__text-input::placeholder {
+  color: var(--fg-muted);
+}
+.chat-panel__text-input:disabled {
+  opacity: 0.5; cursor: not-allowed;
+}
+.chat-panel__send {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 5px;
+  border: 1px solid var(--edge); background: var(--bg-elevated);
+  color: var(--fg-secondary); cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.chat-panel__send:hover:not(:disabled) {
+  background: var(--fg); color: var(--bg); border-color: var(--fg);
+}
+.chat-panel__send:disabled {
+  opacity: 0.3; cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════ */
+/* MULTIPLAYER — Notifications                 */
+/* ═══════════════════════════════════════════ */
+.rt-notifications {
+  position: fixed; bottom: 16px; left: 16px;
+  display: flex; flex-direction: column; gap: 6px;
+  z-index: 260; pointer-events: none;
+}
+.rt-notification {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 6px;
+  background: var(--bg-elevated); border: 1px solid var(--edge);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  color: var(--fg-secondary);
+  animation: rt-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes rt-slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive chat */
+@media (max-width: 680px) {
+  .chat-panel {
+    width: calc(100vw - 32px);
+    bottom: 8px; right: 8px;
+  }
+}
+
+/* ═══════════════════════════════════════════ */
+/* STACK — Hover Interaction                   */
+/* ═══════════════════════════════════════════ */
+.stack-item {
+  position: relative;
+  /* Reduced size to fit raw icons naturally like reference grid */
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  /* Removed border, box-shadow and elevated background to let icons float naturally */
+}
+.stack-item__img {
+  width: 36px; height: 36px;
+  object-fit: contain;
+  /* Fully desaturated and muted by default */
+  filter: grayscale(100%) opacity(0.65);
+  transition: filter 0.25s ease, transform 0.25s ease;
+}
+.stack-item:hover .stack-item__img {
+  /* Colorful and fully opaque on hover */
+  filter: grayscale(0%) opacity(1);
+  transform: scale(1.05); /* Slight pop matching an idle hover */
+}
+/* Text fallback for missing images */
+.stack-item__text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fg-tertiary);
+  filter: grayscale(100%) opacity(0.55);
+  transition: filter 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+.stack-item:hover .stack-item__text {
+  filter: grayscale(0%) opacity(1);
+  color: var(--fg);
+  transform: scale(1.05);
+}
+/* Tooltip label matching exact visual reference */
+.stack-item__label {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  font-family: var(--font-sans); /* Use sans-serif for typical minimal system tooltips */
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #ffffff;
+  background: #111111;
+  padding: 5px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  letter-spacing: 0.01em;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+/* Tiny black pointer triangle pointing down */
+.stack-item__label::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #111111;
+}
+.stack-item:hover .stack-item__label {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Stack filter buttons */
+.stack-filter {
+  padding: 4px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 999px;
+  border: 1px solid var(--edge);
+  background: transparent;
+  color: var(--fg-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-sans);
+}
+.stack-filter:hover {
+  border-color: var(--fg-muted);
+}
+.stack-filter--active {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+
+/* ═══════════════════════════════════════════ */
+/* COMMUNITY — Logo Grid                       */
+/* ═══════════════════════════════════════════ */
+.community-cell {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  padding: 36px 20px;
+  border-bottom: 1px solid var(--edge);
+  border-right: 1px solid var(--edge);
+  transition: background 0.15s ease;
+  cursor: crosshair;
+}
+.community-cell--empty {
+  pointer-events: none;
+}
+.community-logo-wrapper {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+}
+.community-logo {
+  max-width: 240px;
+  max-height: 100px;
+  object-fit: contain;
+  filter: grayscale(100%) opacity(0.45);
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+/* If dark theme, invert the AWS and HackWithIndia if they are black logos, or just rely on brightness */
+[data-theme="dark"] .community-logo {
+  filter: grayscale(100%) brightness(1.8) opacity(0.5);
+}
+.community-cell:hover .community-logo {
+  filter: grayscale(0%) opacity(1) brightness(1);
+  transform: scale(1.03);
+}
+
+.community-label {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #ffffff;
+  background: #111111;
+  padding: 5px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  letter-spacing: 0.01em;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.community-label::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #111111;
+}
+.community-cell:hover .community-label {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
