@@ -1393,11 +1393,11 @@ export default function Home() {
             
             <div className="relative z-1 flex flex-col gap-4 mt-2">
               <p className="font-sans text-[14px] md:text-[15px] font-medium text-[var(--fg)] italic leading-[1.8] text-center px-4">
-                "You have a right to perform your prescribed duty, but you are not entitled to the fruits of actions."
+                "your next move matters more than your last mistake."
               </p>
               <div className="w-full flex justify-end pr-2 md:pr-8">
                 <span className="font-mono text-[11px] text-[var(--fg-secondary)] tracking-wide">
-                  — Bhagavad Gita
+                  — destiny.
                 </span>
               </div>
             </div>
